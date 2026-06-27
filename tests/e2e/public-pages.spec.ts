@@ -2,6 +2,12 @@ import { duplicateElementIds } from "./utils/a11y";
 import { bug } from "./utils/annotations";
 import { expect, test } from "./fixtures";
 
+// NOTE: this is the exploratory "defect-guard" suite. Unlike the core-flow specs
+// (which drive everything through Page Objects), these are one-off SEO/a11y/route
+// probes spanning ~15 unrelated pages. Building a Page Object per probed route
+// would add indirection without reuse, so we intentionally use raw page.* calls
+// here and keep the Page Object Model for the reusable core journeys.
+
 const LOST_PAGE = { name: "We seem to have lost this page" };
 
 // ---------------------------------------------------------------------------

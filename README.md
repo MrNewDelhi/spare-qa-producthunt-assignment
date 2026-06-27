@@ -1,42 +1,75 @@
 # Spare QA Engineering Assignment - Product Hunt
 
-This repo treats Product Hunt as the product under test and covers the assignment deliverables:
+This repo treats Product Hunt as the product under test and covers the assignment deliverables.
 
-- `docs/test-strategy.md` - one-page QA strategy
-- `docs/major-scenarios.md` - 10 major frontend/API scenarios to prioritize
-- `docs/automation-architecture.md` - Playwright POM and API service architecture
-- `docs/test-run-results.md` - latest local execution results and reproducibility status
-- `docs/findings.md` and `docs/security-assessment.md` - exploratory and API/security findings
-- `tests/e2e` - Playwright scenarios for the public web app
-- `tests/api` - Bun + TypeScript GraphQL API tests
+**Documentation (`docs/`)**
+
+| File | What it covers |
+|---|---|
+| [`test-strategy.md`](docs/test-strategy.md) | One-page, risk-based QA strategy (Part 1) |
+| [`findings.md`](docs/findings.md) | Exploratory testing log — 100 findings with repro/evidence/severity (Part 2) |
+| [`security-assessment.md`](docs/security-assessment.md) | Focused security observations on the app + GraphQL API (Part 2) |
+| [`major-scenarios.md`](docs/major-scenarios.md) | The major frontend/API scenarios, prioritized |
+| [`test-cases.md`](docs/test-cases.md) | Detailed manual/automated test-case catalogue |
+| [`automation-architecture.md`](docs/automation-architecture.md) | Playwright POM + API service architecture and decisions |
+| [`api-reference.md`](docs/api-reference.md) | Product Hunt GraphQL notes used to design the API suite |
+| [`test-run-results.md`](docs/test-run-results.md) | Latest local execution record + reproducibility status |
+| [`jira/frontend-tickets.md`](docs/jira/frontend-tickets.md), [`jira/api-tickets.md`](docs/jira/api-tickets.md) | Findings written up as engineering-ready tickets |
+
+**Tests**
+
+- [`tests/e2e`](tests/e2e) — Playwright scenarios for the public web app (Page Object Model)
+- [`tests/api`](tests/api) — Bun + TypeScript GraphQL API tests (typed service layer)
 
 ## Setup
 
-```bash
-bun install
-cp .env.example .env
-# Add PH_API_TOKEN to .env for authenticated API checks
-bun run pw:install
-```
-
-Playwright is launched by its Node-based CLI through `bun run`; do not run Playwright specs with `bun test`.
-
-## Run
+**Prerequisites:** [Bun](https://bun.sh) `>= 1.3`. Playwright's Chromium is installed by the `pw:install` script below.
 
 ```bash
-bun run test:api
-bun run test:e2e
-bun run typecheck
+bun install                 # install dependencies
+cp .env.example .env        # create your local env file
+# Edit .env and set PH_API_TOKEN=<your token> for the authenticated API tests.
+# A free developer token: https://www.producthunt.com/v2/oauth/applications
+bun run pw:install          # install Playwright's Chromium (+ deps)
 ```
 
-The default scripts intentionally run the assignment-sized core suites: 6 API tests and 8 E2E scenarios. Token-gated API tests skip when `PH_API_TOKEN` is missing; unauthenticated auth-contract tests still run.
+> Playwright is launched by its Node-based CLI via `bun run` (the `test:e2e*` scripts). Do **not** run Playwright specs with `bun test` — that is only for the API suite.
 
-Extended defect-guard suites are available separately:
+### Environment variables
 
-```bash
-bun run test:api:extended
-bun run test:e2e:extended
-```
+| Variable | Required | Purpose |
+|---|---|---|
+| `PH_API_TOKEN` | For API tests | Bearer token for the GraphQL API. Token-gated tests skip cleanly if absent (CI fails loudly instead). |
+| `PH_API_URL` | No | GraphQL endpoint. Defaults to the public Product Hunt URL. |
+| `PH_WEB_BASE_URL` | No | Web app base URL for E2E. Defaults to `https://www.producthunt.com`. |
+| `PW_HEADLESS` | No | `0` forces headed, `1` forces headless. Defaults to headed locally / headless in CI. |
+| `PH_CF_BYPASS_HEADER` | No | `"<header>: <secret>"` to pass an owner-side WAF allow header in bot-gated envs. |
+| `PH_FORCE_RATE_LIMIT_SKIP` | No | `1` forces the API rate-limit skip path (for demos). |
+
+## How to run
+
+| Command | What it does |
+|---|---|
+| `bun run typecheck` | TypeScript type-check (`tsc --noEmit`) |
+| `bun run test:api` | **Core API suite** — 6 typed GraphQL tests (the graded default) |
+| `bun run test:e2e` | **Core E2E suite** — 8 `@core` Chromium scenarios (the graded default) |
+| `bun run test:api:extended` | Full API suite — 27 tests incl. security & defect guards |
+| `bun run test:e2e:extended` | Full E2E suite — all specs, both projects (Chromium + Pixel 7) |
+| `bun run test:e2e:smoke` | `@smoke`-tagged scenarios only |
+| `bun run test:e2e:mobile` | `@core` scenarios on the mobile (Pixel 7) project |
+| `bun run test:e2e:ui` | Playwright interactive UI mode |
+| `bun run report` | Open the last Playwright HTML report |
+
+The default `test:api` / `test:e2e` scripts run the assignment-sized core suites (6 API tests, 8 E2E scenarios). Token-gated API tests skip when `PH_API_TOKEN` is missing; the unauthenticated auth-contract tests still run.
+
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs two jobs on every push/PR:
+
+- **api** — typecheck + the full API suite (`test:api:extended`). The token comes from a **GitHub Actions secret**, never the repo: `PH_API_TOKEN: ${{ secrets.PH_API_TOKEN }}`. The `preflight` test fails loudly if the secret is missing, so a run can never go green by silently skipping authenticated coverage.
+- **e2e** — installs Chromium and runs the core suite headless; the optional `PH_CF_BYPASS_HEADER` secret is passed through for owner-side WAF allowlisting, and the Playwright report is uploaded as an artifact on failure.
+
+**To enable CI after forking/cloning:** add the secret in **Settings → Secrets and variables → Actions → New repository secret**, named `PH_API_TOKEN` (and optionally `PH_CF_BYPASS_HEADER`).
 
 ## Highest-Value Findings
 

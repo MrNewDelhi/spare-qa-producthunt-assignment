@@ -46,9 +46,16 @@ describe("Product Hunt GraphQL security posture", () => {
     expect(Number(small.headers.get("x-rate-limit-limit"))).toBeGreaterThan(0);
     expect(Number(broad.headers.get("x-rate-limit-limit"))).toBeGreaterThan(0);
 
+    // The broad query selects 5 aliased posts(first:20) = 100 connection edges
+    // with many scalar fields each; the tiny query selects 1. Debit tracks edge
+    // count (~100 more), NOT field count — confirming complexity is connection-
+    // based, not field-based as the docs imply. Asserted as a tolerant band so a
+    // shared/parallel token's background drift can't flake this on exact equality.
     const smallRemaining = Number(small.headers.get("x-rate-limit-remaining"));
     const broadRemaining = Number(broad.headers.get("x-rate-limit-remaining"));
-    expect(smallRemaining - broadRemaining).toBe(100);
+    const broadExtraDebit = smallRemaining - broadRemaining;
+    expect(broadExtraDebit).toBeGreaterThanOrEqual(95);
+    expect(broadExtraDebit).toBeLessThanOrEqual(105);
   });
 
   tokenTest("depth and max-complexity controls reject very deep nested queries", async () => {

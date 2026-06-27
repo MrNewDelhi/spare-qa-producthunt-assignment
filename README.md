@@ -70,6 +70,22 @@ The full report documents 100 confirmed findings and observations in `docs/findi
 | Flake control | Web-first assertions, no hard waits, structural checks |
 | Secrets | `PH_API_TOKEN` only from environment |
 
+## What I'd Do With More Time
+
+- **Stable E2E environment:** a non-bot-gated staging URL or an owner-side WAF
+  allowlist so headless CI runs deterministically instead of skipping on
+  Cloudflare `403`s.
+- **Schema contract snapshots:** GraphQL codegen + typed operations and a
+  schema-diff check in CI to catch breaking changes before customers do.
+- **Sandbox OAuth + mutation coverage:** disposable accounts to safely test
+  authenticated write flows (votes, follows, comments) that are out of scope here.
+- **Accessibility automation:** `axe-core` scans wired into the E2E pages to turn
+  the manual a11y/SEO findings into regression guards.
+- **Operationalise at scale:** dedicated CI token, sharded Playwright runs,
+  JUnit/blob reporting into a dashboard, and synthetic production monitoring on
+  the core read journeys and the GraphQL endpoint.
+- **Visual + cross-browser regression** for the high-traffic discovery pages.
+
 ## Local Verification Note
 
 See `docs/test-run-results.md` for the latest local execution record.

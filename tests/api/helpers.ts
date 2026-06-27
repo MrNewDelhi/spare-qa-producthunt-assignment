@@ -1,9 +1,19 @@
 import { expect, test } from "bun:test";
 import { gql, hasToken } from "../../src/lib/graphql-client";
+import { rateLimitStatus } from "./rate-limit";
+
+// Resolved once before any test registers (memoized in rate-limit.ts), so a
+// token that is already over budget skips token tests with a clear reason
+// instead of producing a misleading red cascade of 429s.
+const rateLimit = await rateLimitStatus();
 
 function tokenTestImpl(name: string, fn: () => Promise<void>): void {
   if (!hasToken()) {
     test.skip(name, fn);
+    return;
+  }
+  if (rateLimit.limited) {
+    test.skip(`${name} [skipped: ${rateLimit.reason}]`, fn);
     return;
   }
 
@@ -19,6 +29,10 @@ function tokenTestImpl(name: string, fn: () => Promise<void>): void {
 function tokenTestFailing(name: string, fn: () => Promise<void>): void {
   if (!hasToken()) {
     test.skip(name, fn);
+    return;
+  }
+  if (rateLimit.limited) {
+    test.skip(`${name} [skipped: ${rateLimit.reason}]`, fn);
     return;
   }
 

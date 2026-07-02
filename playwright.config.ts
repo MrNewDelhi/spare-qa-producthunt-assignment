@@ -52,9 +52,11 @@ export default defineConfig({
     actionTimeout: 10_000,
     navigationTimeout: 15_000,
     // Traces/screenshots/video auto-attach to the HTML report for triage.
-    trace: "on-first-retry",
+    // Set PW_VIDEO=1 to capture a full trace + video of every scenario (used by
+    // the `test:e2e:record` script to produce a demo report with execution video).
+    trace: process.env.PW_VIDEO === "1" ? "on" : "on-first-retry",
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    video: process.env.PW_VIDEO === "1" ? "on" : "retain-on-failure",
     testIdAttribute: "data-test"
   },
   projects: [

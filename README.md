@@ -58,7 +58,8 @@ bun run pw:install          # install Playwright's Chromium (+ deps)
 | `bun run test:e2e:smoke` | `@smoke`-tagged scenarios only |
 | `bun run test:e2e:mobile` | `@core` scenarios on the mobile (Pixel 7) project |
 | `bun run test:e2e:ui` | Playwright interactive UI mode |
-| `bun run report` | Open the last Playwright HTML report |
+| `bun run test:e2e:record` | Run the core suite headed and record a trace + video of every scenario |
+| `bun run report` | Open the last Playwright HTML report (traces, screenshots, videos) |
 
 The default `test:api` / `test:e2e` scripts run the assignment-sized core suites (6 API tests, 8 E2E scenarios). Token-gated API tests skip when `PH_API_TOKEN` is missing; the unauthenticated auth-contract tests still run.
 
@@ -73,7 +74,7 @@ The default `test:api` / `test:e2e` scripts run the assignment-sized core suites
 
 ## Highest-Value Findings
 
-The full report documents 100 confirmed findings and observations in `docs/findings.md`. The strongest interview-ready items are:
+The full report is in `docs/findings.md` (100 findings). The highest-impact ones:
 
 - Official API starter app omits OAuth `state` and stores a signed Product Hunt access token in a readable cookie without `HttpOnly`, `Secure`, or `SameSite`.
 - Official starter proxy drops upstream GraphQL HTTP status and `x-rate-limit-*` headers, masking auth/rate-limit failures from developers who copy it.
@@ -102,16 +103,6 @@ The full report documents 100 confirmed findings and observations in `docs/findi
 | Data | Live read-only public data |
 | Flake control | Web-first assertions, no hard waits, structural checks |
 | Secrets | `PH_API_TOKEN` only from environment |
-
-## How I Worked (AI Usage)
-
-The assignment permits AI assistants provided I understand and can explain everything I submit — so, transparently: I used an AI assistant to accelerate scaffolding, first-draft tests, and the findings write-up. What I owned:
-
-- **Verification** — every finding was reproduced against the live product before it went in the report; anything I couldn't independently reproduce was left out rather than claimed on faith.
-- **Architecture decisions** — the Page Object Model style, Cloudflare *skip-with-reason* (no WAF bypass), the API rate-limit preflight, `test.failing` defect guards, and runtime Zod schema-contract validation are deliberate choices I can walk through and defend.
-- **Scope & ethics** — read-only, anonymous, no mutations/brute-force (see [test-strategy](docs/test-strategy.md)).
-
-AI multiplied coverage and speed; the judgement, verification, and design are mine.
 
 ## What I'd Do With More Time
 

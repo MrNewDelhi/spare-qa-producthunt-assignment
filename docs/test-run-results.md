@@ -1,6 +1,6 @@
 # Test Run Results
 
-Run date: 2026-06-28
+Run date: 2026-07-02
 
 ## Environment
 
@@ -15,6 +15,7 @@ Run date: 2026-06-28
 bun run typecheck
 bunx playwright test --project=chromium --grep @core --list
 PW_HEADLESS=0 bunx playwright test --project=chromium --grep @core
+bun run test:e2e:record   # headed run that records a trace + video per scenario
 bun test tests/api/core.test.ts
 bun test tests/api
 ```
@@ -45,6 +46,20 @@ Headed local Chromium passes Cloudflare and renders the app. In a representative
 Headless (CI default) is `403`-gated by Cloudflare; the `BasePage` guard turns
 that into a skip-with-reason instead of a misleading failure. No sleeps, no
 `networkidle`, no bypass logic.
+
+## Reports & Execution Video
+
+`bun run test:e2e:record` runs the core suite headed with `PW_VIDEO=1`, which
+records a trace and a video for every scenario. The last run produced:
+
+- `playwright-report/` — the self-contained HTML report (open with `bun run report`),
+  with each scenario's steps, screenshots, trace, and video attached.
+- `test-results/**/video.webm` — one execution video per scenario.
+- `test-results/**/trace.zip` — a Playwright trace per scenario (view at
+  [trace.playwright.dev](https://trace.playwright.dev) or `bunx playwright show-trace <file>`).
+
+These artifacts are build output, so they are git-ignored rather than committed;
+regenerate them locally with the command above.
 
 ## API Defect Guards (`test.failing`)
 

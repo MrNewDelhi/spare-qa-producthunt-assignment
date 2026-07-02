@@ -11,6 +11,7 @@
     "test:e2e:extended": "playwright test",
     "test:e2e:mobile": "playwright test --project=mobile-chrome --grep @core",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:record": "PW_VIDEO=1 PW_HEADLESS=0 playwright test --project=chromium --grep @core",
     "report": "playwright show-report",
     "pw:install": "playwright install --with-deps chromium",
     "typecheck": "tsc --noEmit"

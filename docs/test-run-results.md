@@ -28,7 +28,7 @@ bun test tests/api
 | Default E2E suite (`test:e2e`) | Exactly 8 `@core` Chromium scenarios in 6 files |
 | Default E2E execution (headed, local) | No failures. Passes the Cloudflare challenge and runs real assertions; navigations that hit a `403` skip-with-reason |
 | Default API suite (`test:api`, with token) | **6 pass / 0 fail** (includes 1 `failing` defect-guard) |
-| Extended API suite (`test:api:extended`, fresh window) | 21 pass + 6 `failing` defect-guards; subject to API rate limits if re-run rapidly |
+| Extended API suite (`test:api:extended`, fresh window) | 28 tests: 22 pass (incl. runtime Zod schema-contract) + 6 `failing` defect-guards; subject to API rate limits if re-run rapidly |
 
 ## E2E Execution Evidence
 

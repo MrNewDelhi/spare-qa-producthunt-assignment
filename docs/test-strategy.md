@@ -13,4 +13,4 @@
 
 **CI policy.** `bun test tests/api` for API tests, `bun run test:e2e` for Playwright under Node, Chromium only for speed, traces/screenshots on failure, no hard waits. Token-required tests skip gracefully when `PH_API_TOKEN` is absent.
 
-**Known limits.** I did not test authenticated write flows, payments/ads purchase flows, production load, or full cross-browser/visual regression. With more time I would add sandbox OAuth accounts, GraphQL codegen contract snapshots, axe accessibility scans, synthetic monitoring, and a safe staging environment for mutation tests.
+**Known limits (deliberate).** I stayed read-only and anonymous, so authenticated and stateful behaviour is out of scope by design. With a disposable account I would extend next into session/auth flows, vote and interaction integrity, and write-path contracts. I also did not test payments/ads purchase flows, production load, or full cross-browser/visual regression. With more time I would add sandbox OAuth accounts, GraphQL codegen contract snapshots, axe accessibility scans, and synthetic monitoring.

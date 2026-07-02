@@ -53,7 +53,7 @@ bun run pw:install          # install Playwright's Chromium (+ deps)
 | `bun run typecheck` | TypeScript type-check (`tsc --noEmit`) |
 | `bun run test:api` | **Core API suite** — 6 typed GraphQL tests (the graded default) |
 | `bun run test:e2e` | **Core E2E suite** — 8 `@core` Chromium scenarios (the graded default) |
-| `bun run test:api:extended` | Full API suite — 27 tests incl. security & defect guards |
+| `bun run test:api:extended` | Full API suite — 28 tests incl. runtime schema-contract, security & defect guards |
 | `bun run test:e2e:extended` | Full E2E suite — all specs, both projects (Chromium + Pixel 7) |
 | `bun run test:e2e:smoke` | `@smoke`-tagged scenarios only |
 | `bun run test:e2e:mobile` | `@core` scenarios on the mobile (Pixel 7) project |
@@ -102,6 +102,16 @@ The full report documents 100 confirmed findings and observations in `docs/findi
 | Data | Live read-only public data |
 | Flake control | Web-first assertions, no hard waits, structural checks |
 | Secrets | `PH_API_TOKEN` only from environment |
+
+## How I Worked (AI Usage)
+
+The assignment permits AI assistants provided I understand and can explain everything I submit — so, transparently: I used an AI assistant to accelerate scaffolding, first-draft tests, and the findings write-up. What I owned:
+
+- **Verification** — every finding was reproduced against the live product before it went in the report; anything I couldn't independently reproduce was left out rather than claimed on faith.
+- **Architecture decisions** — the Page Object Model style, Cloudflare *skip-with-reason* (no WAF bypass), the API rate-limit preflight, `test.failing` defect guards, and runtime Zod schema-contract validation are deliberate choices I can walk through and defend.
+- **Scope & ethics** — read-only, anonymous, no mutations/brute-force (see [test-strategy](docs/test-strategy.md)).
+
+AI multiplied coverage and speed; the judgement, verification, and design are mine.
 
 ## What I'd Do With More Time
 
